@@ -1,4 +1,4 @@
-package com.example.talk.dto;
+package com.example.demoTalk.dto;
 
 import lombok.Getter;
 import lombok.Setter;

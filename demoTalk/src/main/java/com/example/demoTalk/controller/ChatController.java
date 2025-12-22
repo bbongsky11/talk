@@ -1,6 +1,6 @@
-package com.example.talk.controller;
+package com.example.demoTalk.controller;
 
-import com.example.talk.dto.ChatMessage;
+import com.example.demoTalk.dto.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
