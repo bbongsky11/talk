@@ -6,17 +6,31 @@ import "./Chat.css";
 export default function Chat() {
     const [client, setClient] = useState(null);
     const [input, setInput] = useState("");
-    const [name, setName] = useState("익명");
+    const [name, setName] = useState(localStorage.getItem("clientId"));
     const [messages, setMessages] = useState([
         {
             id: 1,
             from: "user",
+            sender: localStorage.getItem("clientId"),
             text:
                 "안녕하세요 😊\n메세지를 입력해보세요.\n다른 브라우저에서도 채팅됩니다!"
         }
     ]);
 
     useEffect(() => {
+        function generateUUID() {
+            return crypto.randomUUID();
+        }
+
+        let clientId = localStorage.getItem("clientId");
+
+        if (!clientId) {
+            clientId = generateUUID();
+            localStorage.setItem("clientId", clientId);
+            console.log("clientId:",clientId);
+        }
+
+
         const sock = new SockJS("http://localhost:8080/ws");
         const stomp = new Client({
             webSocketFactory: () => sock,
@@ -27,19 +41,16 @@ export default function Chat() {
             console.log("CONNECTED!");
 
             stomp.subscribe("/topic/chat", (message) => {
-                console.log("message:", message);
                 const body = JSON.parse(message.body);
 
                 setMessages((prev) => [
                     ...prev,
                     {
-                        id: Date.now(),
+                        id: body.sender,
                         from: body.sender === name ? "me" : "user",
-                        text: `${body.sender} : ${body.message}`
+                        text: `${body.message}`
                     }
                 ]);
-
-                console.log("RECEIVED2:", message.body);
             });
         };
 
@@ -59,7 +70,6 @@ export default function Chat() {
                 message: input
             })
         });
-        console.log("SEND:", name, input);
 
         setInput("");
     };
@@ -72,25 +82,11 @@ export default function Chat() {
                 {messages.map((msg) => (
                     <div
                         key={msg.id}
-                        className={`message `}
+                        className={`message ${msg.id === name ? "me" : "user"}`}
                     >
                         <div className="bubble">{msg.text}</div>
                     </div>
                 ))}
-            </div>
-
-            <div style={{ padding: "8px", textAlign: "center" }}>
-                <input
-                    style={{
-                        width: "90%",
-                        padding: "6px",
-                        borderRadius: "8px",
-                        border: "1px solid #ddd"
-                    }}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="닉네임 입력"
-                />
             </div>
 
             <div className="chat-input">

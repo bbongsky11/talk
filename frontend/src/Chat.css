@@ -40,7 +40,7 @@
 /*    border-radius: 10px;*/
 /*}*/
 
-/*.chat-message {*/
+/*.message {*/
 /*    padding: 10px;*/
 /*    background: #eef2ff;*/
 /*    border-radius: 10px;*/
@@ -106,7 +106,7 @@
 }
 
 /* 공통 메시지 스타일 */
-.chat-message {
+.message {
     display: flex;
     margin: 10px 0;
 }
@@ -121,22 +121,22 @@
 }
 
 /* 보낸 메시지 (오른쪽) */
-.chat-message.me {
+.message.me {
     justify-content: flex-end;
 }
 
-.chat-message.me .bubble {
+.message.me .bubble {
     background: #5B9CFF;
     color: white;
     border-bottom-right-radius: 4px;
 }
 
 /* 받은 메시지 (왼쪽) */
-.chat-message.user {
+.message.user {
     justify-content: flex-start;
 }
 
-.chat-message.user .bubble {
+.message.user .bubble {
     background: white;
     border-bottom-left-radius: 4px;
 }
