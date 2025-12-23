@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: demoTalk
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/demochat # serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: happy1004
