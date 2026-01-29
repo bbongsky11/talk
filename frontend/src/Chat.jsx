@@ -16,6 +16,7 @@ export default function Chat() {
                 "안녕하세요 😊\n메세지를 입력해보세요.\n다른 브라우저에서도 채팅됩니다!"
         }
     ]);
+    const roomId = new URLSearchParams(window.location.search).get("roomId");
 
     useEffect(() => {
         function generateUUID() {
@@ -27,6 +28,7 @@ export default function Chat() {
         if (!clientId) {
             clientId = generateUUID();
             localStorage.setItem("clientId", clientId);
+            setName(clientId);
             console.log("clientId:",clientId);
         }
 
@@ -39,15 +41,16 @@ export default function Chat() {
 
         stomp.onConnect = () => {
             console.log("CONNECTED!");
+            console.log("SUBSCRIBE TO:", `/topic/chat/${roomId}`);
 
-            stomp.subscribe("/topic/chat", (message) => {
+            stomp.subscribe(`/exchange/chat.exchange/chat.${roomId}`, (message) => {
                 const body = JSON.parse(message.body);
 
                 setMessages((prev) => [
                     ...prev,
                     {
                         id: body.sender,
-                        from: body.sender === name ? "me" : "user",
+                        from: body.sender === clientId ? "me" : "user",
                         text: `${body.message}`
                     }
                 ]);
@@ -57,14 +60,27 @@ export default function Chat() {
         stomp.activate();
         setClient(stomp);
 
+        stomp.onStompError = (frame) => {
+            console.error("STOMP ERROR", frame.headers, frame.body);
+        };
+
+        stomp.onWebSocketClose = () => {
+            console.log("WebSocket CLOSED");
+        };
+
         return () => stomp.deactivate();
     }, [name]);
+
+
+
 
     const sendMessage = () => {
         if (!input.trim() || !client) return;
 
+        console.log("publish TO:", `/app/send/${roomId}`);
+
         client.publish({
-            destination: "/app/send",
+            destination: `/app/send/${roomId}`,
             body: JSON.stringify({
                 sender: name,
                 message: input
